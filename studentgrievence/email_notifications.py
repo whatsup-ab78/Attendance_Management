@@ -6,28 +6,27 @@ from django.conf import settings
 from studentgrievence.models import students, student_attendance
 from datetime import date, timedelta
 from collections import defaultdict
-import pycurl
-from urllib.parse import urlencode
+import requests
 
 def sends_mail(mail, msg):
     """
-    Send email using pycurl gateway
+    Send email using requests gateway
     """
     try:
-        crl = pycurl.Curl()
-        crl.setopt(crl.URL, 'https://alc-training.in/gateway.php')
+        url = 'https://alc-training.in/gateway.php'
         data = {'email': mail, 'msg': msg}
-        pf = urlencode(data)
-
-        # Sets request method to POST,
-        # Content-Type header to application/x-www-form-urlencoded
-        # and data to send in request body.
-        crl.setopt(crl.POSTFIELDS, pf)
-        crl.perform()
-        crl.close()
-        return True
+        
+        # Send a POST request with the data
+        response = requests.post(url, data=data)
+        
+        if response.status_code == 200:
+            return True
+        else:
+            print(f"[ERROR] Failed to send. Status: {response.status_code}")
+            return False
+            
     except Exception as e:
-        print(f"[ERROR] pycurl error: {str(e)}")
+        print(f"[ERROR] Request error: {str(e)}")
         return False
 
 
