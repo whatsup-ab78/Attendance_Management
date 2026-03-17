@@ -1,0 +1,119 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+
+<section class="vh-100 gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-12 col-lg-9 col-xl-7">
+                <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Manual Attendance Entry  {% if teacher_dept %}({{ teacher_dept }}){% endif %}</h3>
+
+                        {% if message %}
+                        <div class="alert alert-{{ message_type }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'manual_student_attendance' %}">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="student_id">Select Student *</label>
+                                        <select class="form-control form-control-lg" id="student_id" name="student_id"
+                                            required>
+                                            <option value="">-- Select Student --</option>
+                                            {% for student in students %}
+                                            <option value="{{ student.id }}">{{ student.st_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="attendance_date">Date *</label>
+                                        <input type="date" class="form-control form-control-lg" id="attendance_date"
+                                            name="attendance_date" value="{{ today }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="status">Status *</label>
+                                        <select class="form-control form-control-lg" id="status" name="status" required>
+                                            <option value="entry">Entry</option>
+                                            <option value="exit">Exit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="time">Time *</label>
+                                        <input type="time" class="form-control form-control-lg" id="time" name="time"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-outline">
+                                        <label class="form-label" for="slot">Slot *</label>
+                                        <select class="form-control form-control-lg" id="slot" name="slot" required>
+                                            <option value="">-- Select Slot --</option>
+                                            <option value="1">Slot 1 (9:00 - 10:00)</option>
+                                            <option value="2">Slot 2 (10:00 - 11:00)</option>
+                                            <option value="3">Slot 3 (11:00 - 12:00)</option>
+                                            <option value="4">Slot 4 (12:00 - 13:00)</option>
+                                            <option value="5">Slot 5 (14:00 - 15:00)</option>
+                                            <option value="6">Slot 6 (15:00 - 16:00)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 pt-2 d-flex justify-content-between">
+                                <input class="btn btn-primary btn-lg" type="submit" value="Save Attendance"
+                                    name="submit" />
+                                <a href="{% url 'index' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Auto-select slot based on time
+    document.getElementById('time').addEventListener('change', function () {
+        const time = this.value;
+        const slotSelect = document.getElementById('slot');
+
+        if (time >= '09:00' && time < '10:00') {
+            slotSelect.value = '1';
+        } else if (time >= '10:00' && time < '11:00') {
+            slotSelect.value = '2';
+        } else if (time >= '11:00' && time < '12:00') {
+            slotSelect.value = '3';
+        } else if (time >= '12:00' && time < '13:00') {
+            slotSelect.value = '4';
+        } else if (time >= '14:00' && time < '15:00') {
+            slotSelect.value = '5';
+        } else if (time >= '15:00' && time < '16:00') {
+            slotSelect.value = '6';
+        }
+    });
+</script>
+
+{% include 'footer.html'%}
+{% endblock %}

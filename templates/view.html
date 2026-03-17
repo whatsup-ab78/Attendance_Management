@@ -1,0 +1,25 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+
+<div align="center">
+    <form method="POST" action="approved">
+        {% csrf_token %}
+<table border="2" width="50%">
+    <h1>  </h1>
+    <tr>
+        <td>student</td>
+        <td>Complaint</td>
+
+    </tr>
+{% for i in result %}
+    <tr>
+        <td>{{i.uid}}</td>
+        <td>{{i.complaint}}</td>
+
+        </tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}
+{% include 'footer.html' %}

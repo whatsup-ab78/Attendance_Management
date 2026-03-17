@@ -1,0 +1,77 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+
+<section class="min-vh-100 gradient-custom py-5">
+  <div class="container h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-lg-9 col-xl-7">
+        <div class="card shadow-2-strong card-registration" style="border-radius: 15px; overflow: hidden;">
+          <div class="card-header bg-white border-0 pt-5 text-center">
+            <div class="profile-icon mb-3">
+              <i class="fa fa-user-circle fa-5x text-primary"></i>
+            </div>
+            <h2 class="font-weight-bold">My Profile</h2>
+            <p class="text-muted">Faculty Information Profile</p>
+          </div>
+          <div class="card-body p-4 p-md-5">
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="profile-item p-3 rounded bg-light">
+                  <label class="small text-uppercase font-weight-bold text-primary mb-1 d-block"><i
+                      class="fa fa-id-card mr-2"></i>Full Name</label>
+                  <h5 class="mb-0">{{ result.t_name }}</h5>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="profile-item p-3 rounded bg-light">
+                  <label class="small text-uppercase font-weight-bold text-primary mb-1 d-block"><i
+                      class="fa fa-envelope mr-2"></i>Email Address</label>
+                  <h5 class="mb-0">{{ result.t_email }}</h5>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="profile-item p-3 rounded bg-light">
+                  <label class="small text-uppercase font-weight-bold text-primary mb-1 d-block"><i
+                      class="fa fa-building mr-2"></i>Department</label>
+                  <h5 class="mb-0">{{ result.t_department }}</h5>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="profile-item p-3 rounded bg-light">
+                  <label class="small text-uppercase font-weight-bold text-primary mb-1 d-block"><i
+                      class="fa fa-graduation-cap mr-2"></i>Semester</label>
+                  <h5 class="mb-0">{{ result.t_semester }}</h5>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="profile-item p-3 rounded bg-light">
+                  <label class="small text-uppercase font-weight-bold text-primary mb-1 d-block"><i
+                      class="fa fa-lock mr-2"></i>Password</label>
+                  <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                    <span>********</span>
+                    <button class="btn btn-sm btn-outline-primary"
+                      onclick="this.previousElementSibling.innerText='{{ result.t_password }}'; this.remove();">Show</button>
+                  </h5>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 text-center">
+              <a href="{% url 'index' %}" class="btn btn-primary btn-lg px-5">Back to Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

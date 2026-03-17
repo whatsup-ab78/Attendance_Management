@@ -1,0 +1,328 @@
+{% include 'header.html' %}
+
+<style>
+    .teacher-attendance-container {
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 2em;
+        font-weight: 600;
+    }
+
+    .legend {
+        display: flex;
+        gap: 25px;
+        justify-content: center;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    .legend-badge {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.9em;
+    }
+
+    .legend-badge.present {
+        background: #10b981;
+        color: white;
+    }
+
+    .legend-badge.late {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .legend-badge.absent {
+        background: #ef4444;
+        color: white;
+    }
+
+    .attendance-table-wrapper {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .attendance-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .attendance-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .attendance-table th {
+        padding: 15px 10px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9em;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .attendance-table th:last-child {
+        border-right: none;
+    }
+
+    .attendance-table tbody tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background 0.2s;
+    }
+
+    .attendance-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .attendance-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .attendance-table td {
+        padding: 12px 10px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .student-name {
+        text-align: left !important;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .date-cell {
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .time-cell {
+        color: #475569;
+        font-size: 0.85em;
+    }
+
+    .slot-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.85em;
+        min-width: 25px;
+    }
+
+    .slot-badge.P {
+        background: #10b981;
+        color: white;
+    }
+
+    .slot-badge.L {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .slot-badge.A {
+        background: #ef4444;
+        color: white;
+    }
+
+    .present-count {
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .overall-status {
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 0.85em;
+        display: inline-block;
+    }
+
+    .overall-status.Present {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .overall-status.Absent {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+        font-size: 1.1em;
+    }
+
+    .slot-header {
+        font-size: 0.75em;
+        display: block;
+        margin-top: 3px;
+        opacity: 0.9;
+    }
+</style>
+
+<div class="teacher-attendance-container">
+    <h1 class="page-title">📊 Student Attendance Report {% if teacher_dept %}({{ teacher_dept }}){% endif %}</h1>
+
+    <div class="legend">
+        <div class="legend-item">
+            <span class="legend-badge present">P</span>
+            <span>Present</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-badge late">L</span>
+            <span>Late (>10 min)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-badge absent">A</span>
+            <span>Absent</span>
+        </div>
+    </div>
+
+    <!-- Email Status Messages -->
+    {% if email_status %}
+    <div
+        style="background: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #10b981; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa fa-check-circle mr-2"></i> {{ email_status }}</span>
+        <button onclick="this.parentElement.remove()"
+            style="background:none; border:none; cursor:pointer; color:#065f46;">&times;</button>
+    </div>
+    {% endif %}
+
+    {% if email_error %}
+    <div
+        style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ef4444; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa fa-exclamation-triangle mr-2"></i> {{ email_error }}</span>
+        <button onclick="this.parentElement.remove()"
+            style="background:none; border:none; cursor:pointer; color:#991b1b;">&times;</button>
+    </div>
+    {% endif %}
+
+    <!-- Date Filter Form -->
+    <div
+        style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); margin-bottom: 25px;">
+        <form method="GET" action="" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Select
+                    Student:</label>
+                <select name="student_id"
+                    style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em;">
+                    <option value="">-- All Students --</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}" {% ifequal student.id selected_student %}selected{% endifequal %}>
+                        {{ student.st_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">Start Date:</label>
+                <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}"
+                    style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em;">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #475569;">End Date:</label>
+                <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}"
+                    style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em;">
+            </div>
+            <div>
+                <button type="submit"
+                    style="padding: 10px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.95em;">
+                    🔍 Filter
+                </button>
+            </div>
+            <div>
+                <a href="?"
+                    style="padding: 10px 20px; background: #e2e8f0; color: #475569; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 0.95em;">
+                    🔄 Reset
+                </a>
+            </div>
+        </form>
+        <div style="margin-top: 10px; color: #64748b; font-size: 0.9em;">
+            📅 Showing records from <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+        </div>
+    </div>
+
+    {% if report %}
+    <div class="attendance-table-wrapper">
+        <table class="attendance-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Date</th>
+                    <th>First Entry</th>
+                    <th>Last Exit</th>
+                    <th>Slot 1<span class="slot-header">9-10</span></th>
+                    <th>Slot 2<span class="slot-header">10-11</span></th>
+                    <th>Slot 3<span class="slot-header">11-12</span></th>
+                    <th>Slot 4<span class="slot-header">12-1</span></th>
+                    <th>Slot 5<span class="slot-header">2-3</span></th>
+                    <th>Slot 6<span class="slot-header">3-4</span></th>
+                    <th>Present</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report %}
+                <tr>
+                    <td class="student-name">{{ row.student }}</td>
+                    <td class="date-cell">{{ row.date }}</td>
+                    <td class="time-cell">{{ row.entry }}</td>
+                    <td class="time-cell">{{ row.exit }}</td>
+                    <td><span class="slot-badge {{ row.slot_1 }}">{{ row.slot_1 }}</span></td>
+                    <td><span class="slot-badge {{ row.slot_2 }}">{{ row.slot_2 }}</span></td>
+                    <td><span class="slot-badge {{ row.slot_3 }}">{{ row.slot_3 }}</span></td>
+                    <td><span class="slot-badge {{ row.slot_4 }}">{{ row.slot_4 }}</span></td>
+                    <td><span class="slot-badge {{ row.slot_5 }}">{{ row.slot_5 }}</span></td>
+                    <td><span class="slot-badge {{ row.slot_6 }}">{{ row.slot_6 }}</span></td>
+                    <td class="present-count">{{ row.present_count }}/6</td>
+                    <td><span class="overall-status {{ row.status }}">{{ row.status }}</span></td>
+                    <td>
+                        {% if row.status == 'Absent' %}
+                        <a href="{% url 'send_absence_email' %}?student_id={{ row.st_id }}&date={{ row.date|date:'Y-m-d' }}&slots={{ row.absent_slots|join:',' }}"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Send absence notification to {{ row.student }}\'s parent?')"
+                            style="padding: 4px 8px; font-size: 0.75em; border-radius: 4px; font-weight: 600;">
+                            <i class="fa fa-paper-plane mr-1"></i> Send Alert
+                        </a>
+                        {% else %}
+                        <span class="text-muted small">N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="attendance-table-wrapper">
+        <div class="no-data">
+            📭 No attendance records found
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% include 'footer.html' %}

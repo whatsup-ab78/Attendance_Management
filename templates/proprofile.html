@@ -1,0 +1,65 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+
+
+<div class="container py-5 h-100">
+    
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col">
+        <div class="card card-registration my-4">
+          <div class="row g-0">
+           
+            <div class="col-xl-12">
+                
+                    {% csrf_token %}
+                <h1 align="center">My Profile</h1>
+
+                <table align="center" class="table table-striped table-bordered" style="width:615px;">
+   
+                    <tbody>
+                    <br>
+                    <br>
+                
+                     <tr>
+                        <th class="col-sm-4"> Name</th>
+                        <td>{{result.p_name}}</td>
+                       
+                      </tr>
+                    
+                      <tr>
+                        <th>Age </th>
+                        <td>{{result.p_age}}</td>
+                       
+                      </tr>
+                      <tr>
+                        <th>Email</th>
+                        <td>{{result.p_email}}</td>
+                       
+                      </tr>
+                      <tr>
+                        <th>Phone</th>
+                        <td>{{result.p_phone}}</td>
+                       
+                      </tr>
+                      <tr>
+                        <th>Password</th>
+                        <td>{{result.p_password}}</td>
+                       
+                      </tr>
+                      
+                    
+                 
+                    </tbody>
+                    
+                  </table>
+                
+             
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% include 'footer.html'%}   
+{% endblock %}

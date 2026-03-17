@@ -1,0 +1,27 @@
+{% load static %}
+{% block content %}
+{% include 'header.html' %}
+
+<div align="center">
+<center><h1>View Complaint</h1></center>
+
+    <form method="POST" action="prcapproved">
+        {% csrf_token %}
+<table border="2" width="50%">
+    <h1>  </h1>
+    <tr>
+        <th>student</th>
+        <th>Complaint</th>
+        <th>Approved</th>
+    </tr>
+{% for i in result %}
+    <tr>
+        <td>{{i.uid}}</td>
+        <td>{{i.complaint}}</td>
+        <td><a href="{% url 'prcapproved' id=i.id %}">Approved</a></td>
+        </tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}
+{% include 'footer.html' %}
