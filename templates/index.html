@@ -11,6 +11,16 @@
         
         <div class="container position-relative">
             <div class="hero-content mx-auto floating-element">
+                {% if messages %}
+                <div class="messages-container mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 10px;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <div class="d-inline-block px-4 py-2 rounded-pill glass-panel mb-4">
                     <span class="text-primary-light fw-bold text-uppercase" style="letter-spacing: 2px; font-size: 0.85rem;">
                         <i class="fas fa-bolt text-warning me-2"></i> Next-Gen Platform
@@ -23,6 +33,12 @@
                     {% if not request.session.uid and not request.session.admin and not request.session.pid and not request.session.tid %}
                     <a href="studentregister" class="btn btn-modern btn-lg px-5">Get Started</a>
                     <a href="studentlogin" class="btn btn-glass btn-lg px-5">Sign In</a>
+                    {% elif request.session.uid %}
+                    <a href="viewattendence" class="btn btn-modern btn-lg px-4">My Dashboard</a>
+                    <a href="{% url 'chat' %}" class="btn btn-glass btn-lg px-4">Class Chat / Who Joined</a>
+                    {% elif request.session.tid %}
+                    <a href="viewattendence_tch" class="btn btn-modern btn-lg px-4">Student Attendance</a>
+                    <a href="{% url 'chat' %}" class="btn btn-glass btn-lg px-4">Class Chat</a>
                     {% endif %}
                 </div>
             </div>

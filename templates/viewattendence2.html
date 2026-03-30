@@ -230,7 +230,7 @@
                     style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 0.95em;">
                     <option value="">-- All Students --</option>
                     {% for student in students %}
-                    <option value="{{ student.id }}" {% ifequal student.id selected_student %}selected{% endifequal %}>
+                    <option value="{{ student.id }}" {% if student.id == selected_student %}selected{% endif %}>
                         {{ student.st_name }}
                     </option>
                     {% endfor %}

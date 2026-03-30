@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.conf import settings
+from django.contrib import messages
 from ml_code.create_db import create_data
 from ml_code.train_db import train_faces
 from ml_code.face_recognition import face_recognize
@@ -25,11 +26,27 @@ def studentregister(request):
     return render(request,'studentregister.html')
  
 def markattendence(request):
-    face_recognize("entry")  
+    expected_uid = request.session.get('uid')
+    result = face_recognize("entry", expected_uid)
+    if result:
+        if result.get('status') == 'success':
+            messages.success(request, result.get('message'))
+        elif result.get('status') == 'error':
+            messages.error(request, result.get('message'))
+        else:
+            messages.warning(request, result.get('message'))
     return redirect(index) 
 
 def markattendence2(request):
-    face_recognize("exit")
+    expected_uid = request.session.get('uid')
+    result = face_recognize("exit", expected_uid)
+    if result:
+        if result.get('status') == 'success':
+            messages.success(request, result.get('message'))
+        elif result.get('status') == 'error':
+            messages.error(request, result.get('message'))
+        else:
+            messages.warning(request, result.get('message'))
     return redirect(index) 
 
 
@@ -41,15 +58,33 @@ def regstudent(request):
         st_college=request.POST.get('st_semester')
         st_phone=request.POST.get('st_phone')
         st_password=request.POST.get('st_password')
+        st_repassword=request.POST.get('st_repassword')
         st_fathername=request.POST.get('fathername')
         parent_email=request.POST.get('parent_email')
+
+        if st_password != st_repassword:
+            messages.error(request, 'Passwords do not match!')
+            return render(request, 'studentregister.html')
+
+        if students.objects.filter(st_email=st_email).exists():
+            messages.error(request, 'Email already exists! Please use a different email.')
+            return render(request, 'studentregister.html')
 
         log=students(st_name=st_name,st_department=st_gender,st_email=st_email,st_semester=st_college,st_phone=st_phone,st_password=st_password,st_fathername=st_fathername,parent_email=parent_email)
         log.save()
         # Use the saved object directly instead of querying by email (avoids MultipleObjectsReturned error)
-        create_data(str(log.id))
+        result = create_data(str(log.id))
+        
+        # Check if the camera timeout or failure occurred
+        if result and result.get('status') == 'error':
+            log.delete() # Revert the saving so they can try again
+            messages.error(request, result.get('message'))
+            return render(request, 'studentregister.html')
+            
         train_faces()
+        messages.success(request, 'Registration successful! You can now log in.')
         return render(request,'studentregister.html')
+    return render(request, 'studentregister.html')
 
 def studentlogin(request):
     return render(request,'studentlogin.html') 
@@ -104,7 +139,7 @@ def login(request):
         return render(request,'index.html')
 
     elif students.objects.filter(st_email=email,st_password=password).exists():
-        userdetails=students.objects.get(st_email=request.POST['email'],st_password=password)
+        userdetails=students.objects.filter(st_email=request.POST['email'],st_password=password).first()
         if userdetails.st_password == request.POST['password']:
             request.session['uid'] = userdetails.id
             request.session['uname'] = userdetails.st_name
@@ -117,7 +152,7 @@ def login(request):
             return render(request,'index.html')
 
     elif hod.objects.filter(p_email=email,p_password=password).exists():
-        userdetails=hod.objects.get(p_email=request.POST['email'],p_password=password)
+        userdetails=hod.objects.filter(p_email=request.POST['email'],p_password=password).first()
         if userdetails.p_password == request.POST['password']:
             request.session['pid'] = userdetails.id
             request.session['pname'] = userdetails.p_name
@@ -132,7 +167,7 @@ def login(request):
   
 
     elif teachers.objects.filter(t_email=email,t_password=password).exists():
-        userdetails=teachers.objects.get(t_email=request.POST['email'],t_password=password)
+        userdetails=teachers.objects.filter(t_email=request.POST['email'],t_password=password).first()
         if userdetails.t_password == request.POST['password']:
             request.session['tid'] = userdetails.id
             request.session['name'] = userdetails.t_name

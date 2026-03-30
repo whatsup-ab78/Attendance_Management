@@ -2,111 +2,185 @@
 {% block content %}
 {% include 'header.html' %}
 
+<style>
+  .card-registration {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px !important;
+  }
+  .card-registration:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  }
+  .form-control {
+    background: rgba(245, 247, 250, 0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    color: #2d3748 !important;
+  }
+  .form-control:focus {
+    background: #ffffff;
+    border-color: #667eea;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+  }
+  .form-label {
+    color: #4a5568 !important; 
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 12px 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
+    transform: translateY(-3px);
+  }
+  .gradient-custom {
+    position: relative;
+    background-color: transparent !important;
+  }
+  /* Optional: we don't strictly need a hardcoded bg if one is inherited, but providing a nice fallback */
+  .text-dark-custom {
+    color: #1a202c !important;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .alert-error {
+    background-color: #fff5f5;
+    color: #c53030;
+    border-left: 5px solid #e53e3e;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  .alert-success {
+    background-color: #f0fff4;
+    color: #276749;
+    border-left: 5px solid #38a169;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  ::placeholder {
+    color: #a0aec0 !important;
+    opacity: 1; /* Firefox */
+  }
+</style>
 
 <section class="vh-100 gradient-custom">
   <div class="container py-5 h-100">
     <div class="row justify-content-center align-items-center h-100">
-      <div class="col-12 col-lg-9 col-xl-7">
-        <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
+      <div class="col-12 col-lg-9 col-xl-8">
+        <div class="card card-registration shadow-2-strong">
           <div class="card-body p-4 p-md-5">
-            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Registration Form</h3>
-            <form method="POST" action="regstudent">
+            <h3 class="mb-4 pb-2 pb-md-0 mb-md-4 text-center text-dark-custom">Registration Form</h3>
+            
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                  <strong>{% if message.tags == 'error' %}Error!{% else %}Success!{% endif %}</strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="regstudent" id="registrationForm">
               {% csrf_token %}
               <div class="row">
 
                 <div class="col-md-6 mb-4">
-
                   <div class="form-outline">
-                    <input type="text" id="lastName" class="form-control form-control-lg" name="st_name" />
-                    <label class="form-label" for="lastName">Name</label>
+                    <label class="form-label" for="Name">Name</label>
+                    <input type="text" id="Name" class="form-control form-control-lg" name="st_name" placeholder="Enter full name" required/>
                   </div>
-
                 </div>
-                <div class="col-md-6 mb-4 pb-2">
 
+                <div class="col-md-6 mb-4">
                   <div class="form-outline">
-                    <input type="email" id="emailAddress" class="form-control form-control-lg" name="st_email"
-                      required />
-                    <label class="form-label" for="emailAddress">email</label>
+                    <label class="form-label" for="emailAddress">Email</label>
+                    <input type="email" id="emailAddress" class="form-control form-control-lg" name="st_email" placeholder="example@email.com" required />
                   </div>
-
                 </div>
+
               </div>
-
-
 
               <div class="row">
 
-                <div class="col-md-12 mb-4 pb-2">
-
+                <div class="col-md-6 mb-4">
                   <div class="form-outline">
-                    <input type="text" id="phoneNumber" class="form-control form-control-lg" name="st_department"
-                      required />
-                    <label class="form-label" for="phoneNumber">Department</label>
+                    <label class="form-label" for="Department">Department</label>
+                    <input type="text" id="Department" class="form-control form-control-lg" name="st_department" placeholder="e.g. Computer Science" required />
                   </div>
-                  <div class="form-outline">
-                    <input type="text" id="phoneNumber" class="form-control form-control-lg" name="st_semester"
-                      required />
-                    <label class="form-label" for="phoneNumber">Semester</label>
-                  </div>
-
                 </div>
-
-                <div class="col-md-6 mb-4 pb-2">
-
+                
+                <div class="col-md-6 mb-4">
                   <div class="form-outline">
-                    <input type="tel" id="phoneNumber" class="form-control form-control-lg" name="st_phone" required />
-                    <label class="form-label" for="phoneNumber">PhoneNumber</label>
+                    <label class="form-label" for="Semester">Semester</label>
+                    <input type="text" id="Semester" class="form-control form-control-lg" name="st_semester" placeholder="e.g. 1st, 2nd" required />
                   </div>
-
-                </div>
-                <div class="col-md-6 mb-4 pb-2">
-
-                  <div class="form-outline">
-                    <input type="text" id="phoneNumber" class="form-control form-control-lg" name="fathername"
-                      required />
-                    <label class="form-label" for="phoneNumber">Father's Name</label>
-                  </div>
-
-                </div>
-                <div class="col-md-6 mb-4 pb-2">
-
-                  <div class="form-outline">
-                    <input type="email" id="parentEmail" class="form-control form-control-lg" name="parent_email"
-                      required />
-                    <label class="form-label" for="parentEmail">Parent's Email</label>
-                  </div>
-
-                </div>
-                <div class="col-md-6 mb-4 pb-2">
-
-                  <div class="form-outline">
-                    <input type="tel" id="phoneNumber" class="form-control form-control-lg" name="st_password" required
-                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{8,}"
-                      title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character" />
-                    <label class="form-label" for="phoneNumber">Password</label>
-                  </div>
-
                 </div>
 
               </div>
-
-              <!---- <div class="row">
-                  <div class="col-12">
-  
-                    <select class="select form-control-lg">
-                      <option value="1" disabled>Choose option</option>
-                      <option value="2">Subject 1</option>
-                      <option value="3">Subject 2</option>
-                      <option value="4">Subject 3</option>
-                    </select>
-                    <label class="form-label select-label">Choose option</label>
-  
+              
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" class="form-control form-control-lg" name="st_phone" placeholder="Enter phone number" required />
                   </div>
-                </div>-->
+                </div>
 
-              <div class="mt-4 pt-2">
-                <input class="btn btn-primary btn-lg" type="submit" value="register" name="submit" />
+                <div class="col-md-6 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="fathername">Father's Name</label>
+                    <input type="text" id="fathername" class="form-control form-control-lg" name="fathername" placeholder="Enter father's name" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="parentEmail">Parent's Email</label>
+                    <input type="email" id="parentEmail" class="form-control form-control-lg" name="parent_email" placeholder="parent@email.com" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-control form-control-lg" name="st_password" required autocomplete="new-password"
+                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&]).{8,}"
+                      title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character" placeholder="Enter password" />
+                  </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="repassword">Retype Password</label>
+                    <input type="password" id="repassword" class="form-control form-control-lg" name="st_repassword" required autocomplete="new-password" placeholder="Retype password" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-2 text-center">
+                <input class="btn btn-primary btn-lg px-5" type="submit" value="Register Now" name="submit" onclick="return validatePasswordMatch();" />
               </div>
 
             </form>
@@ -117,10 +191,19 @@
   </div>
 </section>
 
-<br>
-<br>
-<br>
-<br><br><br><br><br><br><br><br>
+<script>
+  function validatePasswordMatch() {
+    var password = document.getElementById("password").value;
+    var repassword = document.getElementById("repassword").value;
+    if(password != repassword) {
+      alert("Passwords do not match. Please try again.");
+      return false;
+    }
+    return confirm('WARNING: Your camera will now turn on to capture your face for registration. Please ensure your face is clearly visible. Click OK to proceed.');
+  }
+</script>
+
+<br><br><br><br>
 
 {% endblock %}
 {% include 'footer.html' %}

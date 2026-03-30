@@ -92,11 +92,15 @@ def mark_attendance(stud_id, date, time, status):
 # ==========================
 # FACE RECOGNITION FUNCTION
 # ==========================
-def face_recognize(status):
+def face_recognize(status, expected_uid=None):
 
     base_dir = "ml_code/"
 
     cam = cv2.VideoCapture(0)
+    
+    if not cam.isOpened():
+        print("[ERROR] Could not open camera for face recognition.")
+        return {"status": "error", "message": "Camera not found or could not be accessed."}
 
     model = cv2.face.LBPHFaceRecognizer_create()
     model.read(base_dir + 'model.xml')
@@ -109,8 +113,17 @@ def face_recognize(status):
         ids = pickle.load(f)
 
     last_marked = {}  # {(user_id, date, slot, status): True}
+    
+    start_time_cam = datetime.datetime.now()
 
     while cam.isOpened():
+        
+        # Max out running time to 15 seconds if nothing happens, to avoid hanging
+        if (datetime.datetime.now() - start_time_cam).seconds > 15:
+            print("[INFO] Camera timeout reached (15 seconds). Closing.")
+            cam.release()
+            cv2.destroyAllWindows()
+            return {"status": "warning", "message": "Camera timed out before recognizing a face."}
 
         ret, frame = cam.read()
         if not ret:
@@ -129,7 +142,16 @@ def face_recognize(status):
 
             if confidence < 100:
 
-                uid = label[int(result[0])]
+                uid = ids[int(result[0])]
+                
+                # Validation check against logged in user
+                if expected_uid and str(uid) != str(expected_uid):
+                    cv2.putText(frame, "Face Mismatch!", (x, y + h + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+                    cv2.imshow("Face Attendance", frame)
+                    cv2.waitKey(2000)
+                    cam.release()
+                    cv2.destroyAllWindows()
+                    return {"status": "error", "message": "Face does not match the logged-in student account."}
 
                 now = datetime.datetime.now()
                 date = now.strftime("%Y-%m-%d")
@@ -158,6 +180,12 @@ def face_recognize(status):
                     marked_slot = mark_attendance(uid, date, time, status)
                     if marked_slot:
                         last_marked[(uid, date, slot_num, status)] = True
+                        cv2.putText(frame, "Attendance Marked", (x, y + h + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                        cv2.imshow("Face Attendance", frame)
+                        cv2.waitKey(2000)
+                        cam.release()
+                        cv2.destroyAllWindows()
+                        return {"status": "success", "message": f"Attendance marked successfully for Slot {slot_num}."}
 
             else:
                 cv2.putText(
@@ -177,6 +205,7 @@ def face_recognize(status):
 
     cam.release()
     cv2.destroyAllWindows()
+    return {"status": "warning", "message": "Attendance marking closed manually."}
 
 
 # ==========================

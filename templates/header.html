@@ -84,18 +84,18 @@
                 <!-- Action Buttons based on Role -->
                 <div class="d-flex ms-lg-4 mt-3 mt-lg-0 gap-3">
                     {% if request.session.uid %}
-                    <a href="markattendence" class="btn btn-success-modern btn-modern d-flex align-items-center px-4">
+                    <a href="markattendence" class="btn btn-success-modern btn-modern d-flex align-items-center px-4" onclick="return confirm('WARNING: Your camera will now turn on to mark attendance. It will close automatically upon success. Proceed?');">
                         <i class="fas fa-sign-in-alt me-2"></i> Attendance IN
                     </a>
-                    <a href="markattendence2" class="btn btn-warning-modern btn-modern d-flex align-items-center px-4">
+                    <a href="markattendence2" class="btn btn-warning-modern btn-modern d-flex align-items-center px-4" onclick="return confirm('WARNING: Your camera will now turn on to mark attendance. It will close automatically upon success. Proceed?');">
                         <i class="fas fa-sign-out-alt me-2"></i> Attendance OUT
                     </a>
                     
                     {% elif request.session.tid %}
-                    <a href="markattendence" class="btn btn-success-modern btn-modern d-flex align-items-center px-4 py-2">
+                    <a href="markattendence" class="btn btn-success-modern btn-modern d-flex align-items-center px-4 py-2" onclick="return confirm('WARNING: Your camera will now turn on to mark attendance. It will close automatically upon success. Proceed?');">
                         <i class="fas fa-camera me-2"></i> Scan Entry
                     </a>
-                    <a href="markattendence2" class="btn btn-warning-modern btn-modern d-flex align-items-center px-4 py-2">
+                    <a href="markattendence2" class="btn btn-warning-modern btn-modern d-flex align-items-center px-4 py-2" onclick="return confirm('WARNING: Your camera will now turn on to mark attendance. It will close automatically upon success. Proceed?');">
                         <i class="fas fa-camera-retro me-2"></i> Scan Exit
                     </a>
                     {% endif %}
